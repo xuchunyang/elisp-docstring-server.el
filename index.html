@@ -16,9 +16,7 @@
       const form = document.querySelector("form");
       const input = document.querySelector("#symbol");
       const output = document.querySelector("#result");
-      form.onsubmit = (e) => {
-        e.preventDefault();
-        const symbol = input.value.trim();
+      const search = symbol => {
         if (symbol === "") {
           console.log(`Symbol cannot be empty`);
           return;
@@ -27,11 +25,21 @@
           .then(r => r.json())
           .then(j => {
             output.innerText = j.error || j.result;
+            document.title = `${symbol} - Emacs Lisp Docstring`;
+            history.pushState({}, "", `?q=${symbol}`);
           })
           .catch(e => {
             console.log(e);
             output.innerText = e.message;
-          });
+          });        
+      };
+      const q = new URLSearchParams(window.location.search).get("q");
+      if (q) {
+        search(q);
+      }
+      form.onsubmit = e => {
+        e.preventDefault();
+        search(input.value.trim());
       };
     </script>
   </body>

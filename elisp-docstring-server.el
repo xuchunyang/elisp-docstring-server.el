@@ -60,7 +60,7 @@
         (ws-start
          `(((:GET . ,(rx bos "/api/describe-symbol")) .
             elisp-docstring-server--api-describe-symbol)
-           ((:GET . ,(rx bos "/" eos)) .
+           ((:GET . ,(rx bos "/" (? "?") eos)) .
             elisp-docstring-server--index)
            ((lambda (_req) t) .
             elisp-docstring-server--404))
