@@ -63,6 +63,9 @@
       const q = new URLSearchParams(window.location.search).get("q");
       if (q) {
         search(q);
+        if (!input.value) {
+          input.value = q;
+        }
       }
       form.onsubmit = e => {
         e.preventDefault();
