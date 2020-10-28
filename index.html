@@ -4,12 +4,37 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Emacs Lisp Docstring</title>
+    <style>
+      body {
+        line-height: 1.5;
+        margin: 0 auto;
+        max-width: 900px;
+        text-align: center;
+      }
+
+      input,
+      button {
+        font-family: inherit;
+        font-size: 100%;
+        line-height: inherit;
+        padding: 0.1em 0.2em;
+      }
+
+      #result {
+        text-align: left;
+        border: 1px solid #ccc;
+        box-shadow: 3px 3px 3px #eee;
+        padding: 1em;
+        margin: 1em;        
+      }
+    </style>
   </head>
   <body>
+    <h1>Emacs Lisp Docstring</h1>
     <form>
       <label for="symbol">Describe symbol:</label>
       <input id="symbol" type="text" required>
-      <button>Submit</button>
+      <button>Lookup</button>
     </form>
     <p id="result"></p>
     <script>
