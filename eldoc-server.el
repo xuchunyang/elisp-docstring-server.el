@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'web-server)
+(require 'json)
 
 (defvar eldoc-server-host "0.0.0.0")
 (defvar eldoc-server-port 3000)
