@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Emacs Lisp Docstring</title>
+  </head>
+  <body>
+    <form>
+      <label for="symbol">Describe symbol:</label>
+      <input id="symbol" type="text" required>
+      <button>Submit</button>
+    </form>
+    <p id="result"></p>
+    <script>
+      const form = document.querySelector("form");
+      const input = document.querySelector("#symbol");
+      const output = document.querySelector("#result");
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const symbol = input.value.trim();
+        if (symbol === "") {
+          console.log(`Symbol cannot be empty`);
+          return;
+        }
+        fetch(`/api/describe-symbol?symbol=${symbol}`)
+          .then(r => r.json())
+          .then(j => {
+            output.innerText = j.error || j.result;
+          })
+          .catch(e => {
+            console.log(e);
+            output.innerText = e.message;
+          });
+      };
+    </script>
+  </body>
+</html>
