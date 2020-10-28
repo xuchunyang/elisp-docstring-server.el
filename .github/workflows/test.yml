@@ -23,11 +23,11 @@ jobs:
         curl -s --remote-name-all https://raw.githubusercontent.com/eschulte/emacs-web-server/master/web-server{,-status-codes}.el
         emacs -Q --batch -L . -f batch-byte-compile web-server*
     - name: Byte Compile
-      run: emacs -Q --batch -L . --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile eldoc-server.el
+      run: emacs -Q --batch -L . --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile elisp-docstring-server.el
     - name: Start the server
       run: |
-        emacs --daemon -L . -l eldoc-server
-        emacsclient --eval '(eldoc-server-start)'
+        emacs --daemon -L . -l elisp-docstring-server
+        emacsclient --eval '(elisp-docstring-server-start)'
         curl 'http://localhost:3000/api/describe-symbol?symbol=car'
     # - name: Run Tests
-    #   run: emacs -Q --batch -L . -l eldoc-server-tests -f ert-run-tests-batch-and-exit
+    #   run: emacs -Q --batch -L . -l elisp-docstring-server-tests -f ert-run-tests-batch-and-exit

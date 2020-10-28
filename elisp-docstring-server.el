@@ -1,9 +1,9 @@
-;;; eldoc-server.el --- An Web Server for Emacs Lisp Docstring  -*- lexical-binding: t; -*-
+;;; elisp-docstring-server.el --- An Web Server for Emacs Lisp Docstring  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2020  Xu Chunyang
 
 ;; Author: Xu Chunyang
-;; Homepage: https://github.com/xuchunyang/eldoc-server.el
+;; Homepage: https://github.com/xuchunyang/elisp-docstring-server.el
 ;; Package-Requires: ((emacs "25.1") (web-server "0.1.2"))
 ;; Keywords: help
 ;; Version: 0
@@ -30,17 +30,17 @@
 (require 'web-server)
 (require 'json)
 
-(defvar eldoc-server-host "0.0.0.0")
-(defvar eldoc-server-port 3000)
+(defvar elisp-docstring-server-host "0.0.0.0")
+(defvar elisp-docstring-server-port 3000)
 
-(defconst eldoc-server--load-dir
+(defconst elisp-docstring-server--load-dir
   (file-name-directory
    (or load-file-name buffer-file-name))
   "The directory of the package.")
 
-(defvar eldoc-server--server nil)
+(defvar elisp-docstring-server--server nil)
 
-(defun eldoc-server--end (proc code object)
+(defun elisp-docstring-server--end (proc code object)
   (let ((string (encode-coding-string (concat (json-encode object) "\n") 'utf-8)))
     (ws-response-header
      proc code
@@ -49,38 +49,38 @@
     (process-send-string proc string)))
 
 ;;;###autoload
-(defun eldoc-server-start ()
+(defun elisp-docstring-server-start ()
   "Start the eldoc server."
   (interactive)
-  (when eldoc-server--server
-    (message "[eldoc-server] The server is already running, restarting")
-    (ws-stop eldoc-server--server)
-    (setq eldoc-server--server nil))
-  (setq eldoc-server--server
+  (when elisp-docstring-server--server
+    (message "[elisp-docstring-server] The server is already running, restarting")
+    (ws-stop elisp-docstring-server--server)
+    (setq elisp-docstring-server--server nil))
+  (setq elisp-docstring-server--server
         (ws-start
          `(((:GET . ,(rx bos "/api/describe-symbol")) .
-            eldoc-server--api-describe-symbol)
+            elisp-docstring-server--api-describe-symbol)
            ((:GET . ,(rx bos "/" eos)) .
-            eldoc-server--index)
+            elisp-docstring-server--index)
            ((lambda (_req) t) .
-            eldoc-server--404))
-         eldoc-server-port
+            elisp-docstring-server--404))
+         elisp-docstring-server-port
          nil
-         :host eldoc-server-host))
-  (message "[eldoc-server] Listening at http://%s:%s/"
-           eldoc-server-host
-           eldoc-server-port))
+         :host elisp-docstring-server-host))
+  (message "[elisp-docstring-server] Listening at http://%s:%s/"
+           elisp-docstring-server-host
+           elisp-docstring-server-port))
 
 ;; `httpd-etag'
-(defun eldoc-server--etag (file)
+(defun elisp-docstring-server--etag (file)
   "Compute the ETag for FILE."
   (concat "\"" (substring (sha1 (prin1-to-string (file-attributes file))) -16)
           "\""))
 
-(defun eldoc-server--send-file (req path type)
+(defun elisp-docstring-server--send-file (req path type)
   (with-slots (headers process) req
     (let ((req-etag (alist-get :IF-NONE-MATCH headers))
-          (etag (eldoc-server--etag path)))
+          (etag (elisp-docstring-server--etag path)))
       (if (equal req-etag etag)
           (ws-response-header process 304)
         (with-temp-buffer
@@ -95,13 +95,13 @@
            (cons "etag" etag))
           (process-send-region process (point-min) (point-max)))))))
 
-(defun eldoc-server--index (req)
-  (eldoc-server--send-file
+(defun elisp-docstring-server--index (req)
+  (elisp-docstring-server--send-file
    req
-   (expand-file-name "index.html" eldoc-server--load-dir)
+   (expand-file-name "index.html" elisp-docstring-server--load-dir)
    "text/html; charset=utf-8"))
 
-(defun eldoc-server--404 (req)
+(defun elisp-docstring-server--404 (req)
   (let ((proc (oref req process))
         (body "<h1>404 Not Found</h1>"))
     (ws-response-header
@@ -110,22 +110,22 @@
      `("content-length" . ,(string-bytes body)))
     (process-send-string proc body)))
 
-(defun eldoc-server--api-describe-symbol (req)
+(defun elisp-docstring-server--api-describe-symbol (req)
   (let ((headers (oref req headers))
         (proc (oref req process)))
-    (message "[eldoc-server] HEADERS: %S" headers)
+    (message "[elisp-docstring-server] HEADERS: %S" headers)
     (let ((symbol (assoc-default "symbol" headers)))
       (pcase symbol
         ('nil 
-         (eldoc-server--end
+         (elisp-docstring-server--end
           proc 400
           '((error . "Missing the symbol parameter"))))
         (""
-         (eldoc-server--end
+         (elisp-docstring-server--end
           proc 400
           '((error . "Missing value for the symbol parameter"))))
         ((guard (null (intern-soft symbol)))
-         (eldoc-server--end
+         (elisp-docstring-server--end
           proc 400
           `((error . ,(format
                        "The symbol named %S is not defined in this Emacs instance"
@@ -137,10 +137,10 @@
                             (buffer-substring-no-properties (point-min) (point-max)))))
            (and (get-buffer "*Help*") (kill-buffer "*Help*"))
            (if (string= "" docstring)
-               (eldoc-server--end
+               (elisp-docstring-server--end
                 proc 400
                 `((error . ,(format "No documentation for %s" symbol)))))
-           (eldoc-server--end proc 200 `((result . ,docstring)))))))))
+           (elisp-docstring-server--end proc 200 `((result . ,docstring)))))))))
 
-(provide 'eldoc-server)
-;;; eldoc-server.el ends here
+(provide 'elisp-docstring-server)
+;;; elisp-docstring-server.el ends here
