@@ -51,7 +51,7 @@
           .then(j => {
             output.innerText = j.error || j.result;
             document.title = `${symbol} - Emacs Lisp Docstring`;
-            history.pushState({}, "", `?q=${symbol}`);
+            history.pushState(j, "", `?q=${symbol}`);
           })
           .catch(e => {
             console.log(e);
@@ -65,6 +65,11 @@
       form.onsubmit = e => {
         e.preventDefault();
         search(input.value.trim());
+      };
+      window.onpopstate = e => {
+        const j = event.state;
+        output.innerText = j.error || j.result;
+        document.title = `${symbol} - Emacs Lisp Docstring`;
       };
     </script>
   </body>
