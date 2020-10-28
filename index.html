@@ -25,7 +25,8 @@
         border: 1px solid #ccc;
         box-shadow: 3px 3px 3px #eee;
         padding: 1em;
-        margin: 1em;        
+        margin: 1em;
+        display: none;
       }
     </style>
   </head>
@@ -49,6 +50,7 @@
         fetch(`/api/describe-symbol?symbol=${symbol}`)
           .then(r => r.json())
           .then(j => {
+            output.style.display = "block";
             output.innerText = j.error || j.result;
             document.title = `${symbol} - Emacs Lisp Docstring`;
             history.pushState(j, "", `?q=${symbol}`);
