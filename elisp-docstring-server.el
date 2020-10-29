@@ -92,6 +92,7 @@
            (cons "content-length" (buffer-size))
            ;; TODO Add Last-Modified
            ;; TODO Add Date (for ALL responses)
+           ;; TODO Add headers for cache (for ALL responses)
            (cons "etag" etag))
           (process-send-region process (point-min) (point-max)))))))
 
