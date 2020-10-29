@@ -42,10 +42,13 @@
 
 (defun elisp-docstring-server--end (proc code object)
   (let ((string (encode-coding-string (concat (json-encode object) "\n") 'utf-8)))
-    (ws-response-header
+    (apply
+     #'ws-response-header
      proc code
-     '("content-type" . "application/json; charset=utf-8")
-     (cons "content-length" (string-bytes string)))
+     `(("content-type" . "application/json; charset=utf-8")
+       ("content-length" . ,(string-bytes string))
+       ,@(when (= code 200)
+           '(("cache-control" . "public, max-age=604800, immutable")))))
     (process-send-string proc string)))
 
 ;;;###autoload
@@ -92,7 +95,7 @@
            (cons "content-length" (buffer-size))
            ;; TODO Add Last-Modified
            ;; TODO Add Date (for ALL responses)
-           ;; TODO Add headers for cache (for ALL responses)
+           '("cache-control" . "public, max-age=604800, immutable")
            (cons "etag" etag))
           (process-send-region process (point-min) (point-max)))))))
 
