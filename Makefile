@@ -28,6 +28,6 @@ daemon: elisp-docstring-server.elc
 .PHONY: start
 start:
 	if pgrep emacs; then emacsclient --eval '(kill-emacs 0)'; fi
-        if pgrep caddy; then caddy stop; fi
-        make daemon
-        caddy start
+	if pgrep caddy; then caddy stop; fi
+	make daemon
+	caddy start
