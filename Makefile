@@ -27,9 +27,9 @@ daemon: elisp-docstring-server.elc
 
 .PHONY: deploy
 deploy:
+	if pgrep emacs; then emacsclient --eval '(kill-emacs 0)'; fi
+	if pgrep caddy; then caddy stop; fi
 	cd ~/elisp-docstring-server.el
 	git pull
-	pgrep emacs && pkill emacs || true
-	pgrep caddy && caddy stop || true
 	make daemon
 	caddy start
