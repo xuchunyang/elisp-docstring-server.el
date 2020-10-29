@@ -48,15 +48,23 @@
           return;
         }
         fetch(`/api/describe-symbol?symbol=${symbol}`)
-          .then(r => r.json())
+          .then(r => {
+            const type = r.headers.get("content-type");
+            if (type !== null && type.includes("application/json"))
+              return r.json();
+            return r.text();
+          })
           .then(j => {
+            if (typeof j === "string")
+              j = {error: j};
             output.style.display = "block";
             output.innerText = j.error || j.result;
             document.title = `${symbol} - Emacs Lisp Docstring`;
             history.pushState(j, "", `?q=${symbol}`);
           })
           .catch(e => {
-            console.log(e);
+            console.log("Fetch Error:", e);
+            output.style.display = "block";
             output.innerText = e.message;
           });        
       };
