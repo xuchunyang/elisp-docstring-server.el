@@ -18,13 +18,9 @@ jobs:
       with:
         version: ${{ matrix.emacs_version }}
     - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: |
-        curl -s --remote-name-all https://raw.githubusercontent.com/eschulte/emacs-web-server/master/web-server{,-status-codes}.el
-        emacs -Q --batch -L . -f batch-byte-compile web-server*
-    - name: Byte Compile
-      run: emacs -Q --batch -L . --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile elisp-docstring-server.el
-    - name: Start the server
+    - name: Byte compile
+      run: make
+    - name: Try the server
       run: |
         emacs --daemon -L . -l elisp-docstring-server
         emacsclient --eval '(elisp-docstring-server-start)'
