@@ -21,13 +21,11 @@ web-server-status-codes.el:
 clean:
 	rm -v *.elc
 
-.PHONY: daemon
-daemon: elisp-docstring-server.elc
-	PORT=3000 HOST=127.0.0.1 $(EMACS) --daemon -Q -L . -l elisp-docstring-server -f elisp-docstring-server-start
+# Emacs 8080 => varnish 6081 => caddy 80/443
 
 .PHONY: start
-start:
+start: elisp-docstring-server.elc
 	if pgrep emacs; then emacsclient --eval '(kill-emacs 0)'; fi
-	if pgrep caddy; then caddy stop; fi
-	make daemon
-	caddy start
+	PORT=8080 HOST=127.0.0.1 $(EMACS) --daemon -Q -L . -l elisp-docstring-server -f elisp-docstring-server-start
+	if ! pgrep varnish; then systemctl start varnish; fi
+	if ! pgrep caddy; then caddy start; fi
