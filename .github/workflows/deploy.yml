@@ -1,0 +1,23 @@
+name: Deploy to My VPS
+
+on:
+  push:
+    paths:
+      - '**.html'
+      - '**.el'
+      - Caddyfile
+      - Makefile
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy to my vps
+      uses: garygrossgarten/github-action-ssh@release
+      with:
+        command: make deploy
+        host: ${{ secrets.HOST }}
+        port: ${{ secrets.PORT }}
+        username: ${{ secrets.USERNAME }}
+        privateKey: ${{ secrets.PRIVATE_KEY }}
