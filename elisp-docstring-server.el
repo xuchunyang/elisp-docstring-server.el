@@ -113,7 +113,7 @@
 (defun elisp-docstring-server--api-describe-symbol (req)
   (let ((headers (oref req headers))
         (proc (oref req process)))
-    (message "[elisp-docstring-server] HEADERS: %S" headers)
+    ;; (message "[elisp-docstring-server] HEADERS: %S" headers)
     (let ((symbol (assoc-default "symbol" headers)))
       (pcase symbol
         ('nil 
