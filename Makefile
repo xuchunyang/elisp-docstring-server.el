@@ -24,12 +24,3 @@ clean:
 .PHONY: daemon
 daemon: elisp-docstring-server.elc
 	PORT=3000 HOST=127.0.0.1 $(EMACS) --daemon -Q -L . -l elisp-docstring-server -f elisp-docstring-server-start
-
-.PHONY: deploy
-deploy:
-	if pgrep emacs; then emacsclient --eval '(kill-emacs 0)'; fi
-	if pgrep caddy; then caddy stop; fi
-	cd ~/elisp-docstring-server.el
-	git pull
-	make daemon
-	caddy start
