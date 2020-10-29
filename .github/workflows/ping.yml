@@ -1,0 +1,15 @@
+name: is elisp-docstring.xuchunyang.me down?
+
+on:
+  - cron: "0 0 * * *"
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: http
+        run: curl -v elisp-docstring.xuchunyang.me
+      - name: https
+        run: curl -v https://elisp-docstring.xuchunyang.me
+      - name: api
+        run: curl -v 'https://elisp-docstring.xuchunyang.me/api/describe-symbol?symbol=car'
