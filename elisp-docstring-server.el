@@ -30,8 +30,8 @@
 (require 'web-server)
 (require 'json)
 
-(defvar elisp-docstring-server-host "0.0.0.0")
-(defvar elisp-docstring-server-port 3000)
+(defvar elisp-docstring-server-host (or (getenv "HOST") "0.0.0.0"))
+(defvar elisp-docstring-server-port (or (getenv "PORT") 3000))
 
 (defconst elisp-docstring-server--load-dir
   (file-name-directory

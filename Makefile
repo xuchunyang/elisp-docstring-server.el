@@ -20,3 +20,8 @@ web-server-status-codes.el:
 .PHONY: clean
 clean:
 	rm -v *.elc
+
+.PHONY: daemon
+daemon: elisp-docstring-server.elc
+	PORT=3000 HOST=127.0.0.1 $(EMACS) --daemon -Q -L . -l elisp-docstring-server -f elisp-docstring-server-start
+
