@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+
+const fs = require("fs");
+const https = require("https");
+
+// (elisp-demos--export-json-file "elisp-demos.json")
+const names = Object.keys(
+  JSON.parse(fs.readFileSync("elisp-demos.json", "utf8"))
+).filter(
+  (name) =>
+    // Skip dash, s, and f
+    !name.startsWith("-") && !name.startsWith("s-") && !name.startsWith("f-")
+);
+
+console.log(`Total functions: ${names.length}`);
+
+const urls = names.map((name) => {
+  const prefix =
+    "https://elisp-docstring.xuchunyang.me/api/describe-symbol?symbol=";
+  return prefix + encodeURIComponent(name);
+});
+
+const fetch = (idx) => {
+  if (idx >= urls.length) return;
+  const url = urls[idx];
+  https.get(url, (res) => {
+    console.log(`${res.statusCode} ${url} ${idx + 1}/${urls.length}`);
+    res
+      .on("data", () => {})
+      .on("end", () => {
+        setTimeout(fetch, 0, idx + 1);
+      });
+  });
+};
+
+fetch(Number(process.argv[2]) || 0);
