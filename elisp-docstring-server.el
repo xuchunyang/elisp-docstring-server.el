@@ -118,7 +118,11 @@
   (let ((headers (oref req headers))
         (proc (oref req process)))
     ;; (message "[elisp-docstring-server] HEADERS: %S" headers)
-    (let ((symbol (assoc-default "symbol" headers)))
+    (let* ((symbol (assoc-default "symbol" headers))
+           (symbol (if (or (null symbol)
+                           (string= "" symbol))
+                       symbol
+                     (decode-coding-string symbol 'utf-8))))
       (pcase symbol
         ('nil 
          (elisp-docstring-server--end
